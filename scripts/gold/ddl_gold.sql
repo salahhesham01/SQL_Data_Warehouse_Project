@@ -1,3 +1,6 @@
+IF OBJECT_ID('gold.dim_customers', 'V') IS NOT NULL
+    DROP VIEW gold.dim_customers;
+GO
 
 create view gold.dim_customers as
 select 
@@ -18,8 +21,12 @@ left join silver.erp_cust_az12 ca
 on ci.cst_key=ca.cid
 left join silver.erp_loc_a101 la
 on ci.cst_key=la.cid
+GO
 
 
+IF OBJECT_ID('gold.dim_products', 'V') IS NOT NULL
+    DROP VIEW gold.dim_products;
+GO
 create view gold.dim_products as
 select
 	row_number() over (order by pn.prd_start_dt, pn.prd_key ) as product_key,
@@ -37,8 +44,11 @@ from silver.crm_prd_info pn
 left join silver.erp_px_cat_g1v2 pc
 on pn.cat_id = pc.id
 where prd_end_dt is null
+GO
 
-
+IF OBJECT_ID('gold.fact_sales', 'V') IS NOT NULL
+    DROP VIEW gold.fact_sales;
+GO
 create view gold.fact_sales as
 select 
 sd.sls_ord_num as order_number,
@@ -55,3 +65,4 @@ left join gold.dim_products pr
 on sd.sls_prd_key = pr.product_number
 left join gold.dim_customers cr
 on sd.sls_cust_id = cr.customer_id
+GO
